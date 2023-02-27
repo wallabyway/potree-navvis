@@ -1,0 +1,60 @@
+<head>
+    <title>global offset issue</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:,">
+    <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.41/viewer3D.min.js"></script>
+    <script src="https://6jm6lvl74k.execute-api.us-west-2.amazonaws.com/latest/_adsk.js"></script>
+    <link href="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.41/style.min.css" rel="stylesheet">
+    <script src="./potree.min.js"></script>
+    <script src="./PotreeExtension.js"></script>
+</head>
+
+<body style="margin:0; overflow-y: hidden;">    
+    <div id="Viewer"></div>
+</body>
+
+<script>
+
+function startViewer(urn) {
+    const AV = Autodesk.Viewing; 
+    const div = document.getElementById("Viewer");
+    let viewer;
+
+    const params = { 
+        env: "AutodeskProduction", 
+        //api: "streamingV2", 
+        accessToken: _access_token,
+        
+    };
+
+    AV.Initializer(params, () => {
+        viewer = new AV.Private.GuiViewer3D(div, {extensions: ["PotreeExtension"] });
+        viewer.start();
+        viewer.setTheme("light-theme");
+        AV.Document.load(`urn:${urn}`, async (doc) => {
+            var viewables = doc.getRoot().getDefaultGeometry();
+            viewer.loadDocumentNode(doc, viewables, { skipPropertyDb: false }).then ( async model => {
+                //await viewer.waitForLoadDone({ propDb: false, geometry: true});
+                viewer.navigation.toPerspective();
+                const bbox = await loadPointCloud(viewer, "https://hbabl.iv.navvis.com/data/570336057363634/datasets_web/2018-10-26_10.44.23/webcloud/cloud.js");
+                viewer.navigation.fitBounds(false, bbox);                                
+            });
+        });
+    });
+}
+
+// Loads point cloud model
+async function loadPointCloud(viewer, url) {
+    const potreeExtension = viewer.getExtension('PotreeExtension');
+    if (!potreeExtension) return;
+    let position = new THREE.Vector3(-80, -70, -25);
+    let scale = new THREE.Vector3(4, 4, 4);
+    const pointcloud = await potreeExtension.loadPointCloud(name, url, position, scale);
+    return pointcloud.boundingBox.clone().expandByVector(scale);
+}
+
+startViewer("dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6Y29uc29saWRhdGVkL0FwYXJ0bWVudC1GdXJuaXNoZWQtQmFyY2Vsb25hLnJ2dA");
+//empty RVT = "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6Y29kZXBlbjIvRW1wdHkucnZ0");
+
+</script>
