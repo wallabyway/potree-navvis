@@ -1,6 +1,7 @@
 # potree-navvis
 quick prototype showing forge viewer cad plus navvis scans... with caveats
 
+LIVE DEMO: https://wallabyway.github.io/potree-navvis/
 
 Please do the following:
 
