@@ -17,7 +17,7 @@ class PotreeExtension extends Autodesk.Viewing.Extension {
         // Update point clouds on every camera change...
         this.viewer.addEventListener(Autodesk.Viewing.CAMERA_CHANGE_EVENT, this.updatePointClouds.bind(this));
         // ... and also in hard-coded intervals
-        //this._timer = setInterval(this.updatePointClouds.bind(this), 5000);
+        this._timer = setInterval(this.updatePointClouds.bind(this), 500);
 
         console.log('PotreeExtension loaded.');
         return true;
@@ -46,6 +46,16 @@ class PotreeExtension extends Autodesk.Viewing.Extension {
             return Promise.resolve(this._pointclouds.get(name));
         }
         return new Promise((resolve, reject) => {
+            /**
+             * Customizes requests made by Potree.
+             * @param {XMLHttpRequest} xhr Request
+             * @returns {XMLHttpRequest}
+             */
+            Potree.customizeRequest = function (xhr) {
+                xhr.setRequestHeader('X-Authorization', 'Bearer ...');
+                return xhr;
+            }
+
             Potree.loadPointCloud(url, name, (ev) => {
                 const { pointcloud } = ev;
                 const { material } = pointcloud;
@@ -55,10 +65,10 @@ class PotreeExtension extends Autodesk.Viewing.Extension {
                 if (scale) {
                     pointcloud.scale.copy(scale);
                 }
-                material.size = 7;
+                material.size = 2;
                 material.pointColorType = Potree.PointColorType.RGB; //RGB | DEPTH | HEIGHT | POINT_INDEX | LOD | CLASSIFICATION
-                material.pointSizeType = Potree.PointSizeType.FIXED; //ADAPTIVE | 
-                material.shape = Potree.PointShape.SQUARE; //CIRCLE | SQUARE
+                material.pointSizeType = Potree.PointSizeType.ADAPTIVE; //ADAPTIVE | FIXED
+                material.shape = Potree.PointShape.CIRCLE; //CIRCLE | SQUARE
                 this._group.add(pointcloud);
                 this._pointclouds.set(name, pointcloud);
                 this.updatePointClouds();
@@ -70,7 +80,7 @@ class PotreeExtension extends Autodesk.Viewing.Extension {
     updatePointClouds() {
         const pointclouds = Array.from(this._pointclouds.values());
         if (pointclouds) {
-            const camera = this.viewer.impl.camera;
+            const camera = this.viewer.impl.camera; //.perspectiveCamera;
             const renderer = this.viewer.impl.glrenderer();
             Potree.updatePointClouds(pointclouds, camera, renderer);
         }
