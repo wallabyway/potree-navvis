@@ -3031,7 +3031,7 @@
 			var xhr = new XMLHttpRequest();
 			xhr.overrideMimeType("text/plain");
 			xhr.open("GET", url, true);
-			xhr.setRequestHeader('X-Authorization', `Bearer ${window.location.hash.slice(1)}`);
+			//xhr.setRequestHeader('X-Authorization', 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJ0eXBlIjoiQVVUSCIsInByb3ZpZGVyIjoiTE9DQUwiLCJ0b2tlblR5cGUiOiJBQ0NFU1MiLCJzdWIiOiJTdHJlYW1pbmdBZG1pbiIsImV4cCI6MTY3OTQ5NTk0OCwiaWF0IjoxNjc5NDk0MTQ4fQ.2bVeOFtyd1M8NUlmFjMdJmQH43gQlnf2BYcHRWQTGtWgPI3H7AwNMxa9n-uFKoUrbmu0OfYanJ8h-u4l83f8tQ');
 			xhr.onload = function()
 			{
 				var data = JSON.parse(xhr.responseText);

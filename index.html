@@ -37,7 +37,7 @@ function startViewer(urn) {
             viewer.loadDocumentNode(doc, viewables, { skipPropertyDb: false }).then ( async model => {
                 //await viewer.waitForLoadDone({ propDb: false, geometry: true});
                 viewer.navigation.toPerspective();
-                const bbox = await loadPointCloud(viewer, "https://hbabl.iv.navvis.com/data/570336057363634/datasets_web/2018-10-26_10.44.23/webcloud/cloud.js");
+                const bbox = await loadPointCloud(viewer, "https://partners.iv.navvis.com/data/519772065588067/datasets_web/2021-05-01_13.37.18/webcloud/cloud.js");
                 viewer.navigation.fitBounds(false, bbox);                                
             });
         });
